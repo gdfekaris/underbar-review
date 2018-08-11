@@ -185,11 +185,17 @@
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
     if (accumulator === undefined){
+      if(Array.isArray(collection)){
       accumulator = collection[0]
+      }
+      else {
+        let firstvalue = Object.keys(collection)[0];
+        accumulator =collection[firstvalue];
+      }
     }
-    for(let i=0;i<collection.length;i++){
-      accumulator = iterator(accumulator,collection[i])
-    }
+    _.each(collection,function(val,ind,collection){
+        accumulator = iterator(accumulator,val,ind,collection);
+    });
 
     return accumulator;
   };
@@ -384,6 +390,12 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    let result = []
+    for(let i=array.length-1;i>=0;i--){
+        result.push(array[i])
+    }
+    return result;
+
   };
 
 
