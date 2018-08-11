@@ -208,14 +208,43 @@
 
 
   // Determine whether all of the elements match a truth test.
-  _.every = function(collection, iterator) {
-    // TIP: Try re-using reduce() here.
+  // _.every = function(collection, iterator) {
+  //   // TIP: Try re-using reduce() here.
+  //   return _.reduce(collection, function(memo, element){
+  //     if (iterator(element)) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   }, true)
+  // };
+  _.every = function(collection, predicate) {
+    return _.reduce(collection, function(memo, val) { //returning reduce
+      if (!memo) { //if our memo is ever false return false
+        return false;
+      }
+      if (!predicate) {
+        return memo = val;
+      }
+      if (predicate(val)) { //if our predicate operating on val is true return it
+        return true;
+      } else {
+        return false; // else return false
+      }
+    }, true); //default memo is true
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
+
+    return !_.every(collection,function(element){
+      if (!iterator) {
+        return !element;
+      }
+      return !iterator(element);
+    });
   };
 
 
@@ -237,12 +266,40 @@
   //   }, {
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
-  _.extend = function(obj) {
+  _.extend = function(object1, object2) {
+
+      if(object1 === {} && object2 === {}){
+        return object1;
+      }
+      for( let i = 1; i < arguments.length; i++) {
+        for(let key in arguments[i]){
+          object1[key] = arguments[i][key]
+        }
+      }
+      return object1;
+
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
-  _.defaults = function(obj) {
+  _.defaults = function(object1, object2) {
+
+    let destinationKeys = Object.keys(object1)
+
+    if (object1 === {} && object2 === {}) {
+      return object1;
+    }
+    for (let i = 1; i < arguments.length; i++) {
+      for (let key in arguments[i]) {
+        if (!destinationKeys.includes(key)){
+          object1[key] = arguments[i][key];
+          destinationKeys = Object.keys(object1)
+        }
+      }
+    }
+    return object1;
+
+
   };
 
 
@@ -285,7 +342,20 @@
   // _.memoize should return a function that, when called, will check if it has
   // already computed the result for the given argument and return that value
   // instead if possible.
-  _.memoize = function(func) {
+  _.memoize = function (func) {
+    let storage = {};
+
+    return function () {
+      let memo = JSON.stringify(arguments)
+
+      if (storage[memo]) {
+        return storage[memo]
+      } else {
+        storage[memo] = func.apply(null, arguments);
+       // console.log(storage);
+        return storage[memo];
+      }
+    };
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -295,6 +365,11 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    let args = Array.from(arguments).slice(2);
+    var call = function(){
+      return func.apply(null,args)
+    }
+    setTimeout(call, wait);
   };
 
 
