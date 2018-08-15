@@ -410,13 +410,33 @@
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
-  };
+    let result = [];
+
+    if (typeof functionOrKey === 'string'){
+      for (let i = 0; i < collection.length; i++) {
+      result.push(collection[i][functionOrKey]());
+      }
+    } else {
+      _.each(collection, function(e, i, l) {
+        result.push(functionOrKey.apply(e));
+      })
+    }
+      return result;
+  }
+
 
   // Sort the object's values by a criterion produced by an iterator.
   // If iterator is a string, sort objects by that property with the name
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
   _.sortBy = function(collection, iterator) {
+    return collection.sort(function(x, y) {
+      if (typeof iterator === "string") {
+        return x[iterator] - y[iterator];
+      } else {
+        return iterator(x) - iterator(y);
+      }
+    });
   };
 
   // Zip together two or more arrays with elements of the same index
@@ -425,13 +445,45 @@
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    var result = []
+    let limit = 0;
+    let longest;
+
+    for (let i = 0; i < arguments.length; i++) {
+      if (arguments[i].length > limit) {
+        limit = arguments[i].length;
+        longest = arguments[i];
+      }
+    }
+
+    for (var i = 0; i < limit; i++) {
+      if (arguments.length === 2) {
+        var temp = []
+        temp.push(arguments[0][i], arguments[1][i])
+        result.push(temp)
+      } else {
+        var temp = []
+        temp.push(arguments[0][i], arguments[1][i], arguments[2][i])
+        result.push(temp)
+      }
+    }
+    return result;
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
   // The new array should contain all elements of the multidimensional array.
   //
   // Hint: Use Array.isArray to check if something is an array
-  _.flatten = function(nestedArray, result) {
+  _.flatten = function(nestedArray, shallow) {
+      var result = [];
+      nestedArray.forEach(function(value){
+        if(Array.isArray(value)){
+          result = result.concat(_.flatten(value))
+        } else {
+          result.push(value)
+        }
+      });
+      return result;
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
