@@ -445,7 +445,7 @@
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
-    var result = []
+    let result = []
     let limit = 0;
     let longest;
 
@@ -455,17 +455,14 @@
         longest = arguments[i];
       }
     }
-
-    for (var i = 0; i < limit; i++) {
-      if (arguments.length === 2) {
-        var temp = []
-        temp.push(arguments[0][i], arguments[1][i])
-        result.push(temp)
-      } else {
-        var temp = []
-        temp.push(arguments[0][i], arguments[1][i], arguments[2][i])
-        result.push(temp)
+    //result.push(arguments[0][0], arguments[1][0])
+    //result.push(arguments[0][i], arguments[1][i])
+    for (let i = 0; i < limit; i++) {
+      let temp = [];
+      for (let j = 0; j < arguments.length; j++) {
+        temp.push(arguments[j][i]);
       }
+      result.push(temp);
     }
     return result;
   };
